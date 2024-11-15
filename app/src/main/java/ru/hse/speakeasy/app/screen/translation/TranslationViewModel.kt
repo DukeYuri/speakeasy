@@ -1,4 +1,4 @@
-package ru.hse.speakeasy.app.screen
+package ru.hse.speakeasy.app.screen.translation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,13 +7,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.hse.speakeasy.app.core.domain.TranslationUseCase
+import ru.hse.speakeasy.app.core.domain.LanguageCode
+import ru.hse.speakeasy.app.core.domain.history.SaveHistoryUseCase
+import ru.hse.speakeasy.app.core.domain.translation.TranslationUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class TranslationViewModel @Inject constructor(
     private val translationUseCase: TranslationUseCase,
-): ViewModel() {
+    private val saveHistoryUseCase: SaveHistoryUseCase,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(TranslationUiState())
     val uiState: StateFlow<TranslationUiState> = _uiState
 
@@ -36,7 +39,19 @@ class TranslationViewModel @Inject constructor(
 
     fun translateText() {
         viewModelScope.launch {
-            // val result =
+            val result = translationUseCase.translate(
+                sl = LanguageCode.ENGLISH, // _uiState.value.sourceLang,
+                dl = LanguageCode.RUSSIAN, // _uiState.value.targetLang,
+                text = _uiState.value.inputText,
+            )
+
+            _uiState.update {
+                it.copy(
+                    translatedText = result.translations.possibleTranslations.firstOrNull()
+                        ?: _uiState.value.inputText
+                )
+            }
+            saveHistoryUseCase.save(_uiState.value.inputText, _uiState.value.translatedText.orEmpty())
         }
     }
 
