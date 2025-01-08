@@ -1,4 +1,4 @@
-package ru.hse.speakeasy.app.screen.history
+package ru.hse.speakeasy.app.screen.favorite
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -16,15 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import ru.hse.speakeasy.app.core.data.entity.TranslationHistoryEntity
+import ru.hse.speakeasy.app.core.data.entity.FavoriteEntity
 import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen(
-    viewModel: HistoryViewModel = hiltViewModel()
+fun FavoriteScreen(
+    viewModel: FavoriteViewModel = hiltViewModel()
 ) {
-    val historyList = viewModel.getHistory().collectAsState(initial = emptyList())
+    val favoriteList = viewModel.getFavorites().collectAsState(initial = emptyList())
 
     Column(
         modifier = Modifier
@@ -33,19 +33,19 @@ fun HistoryScreen(
     ) {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.White),
-            title = { Text("History") }
+            title = { Text("Favorites") }
         )
 
         LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
-            items(historyList.value) { history ->
-                HistoryItem(history)
+            items(favoriteList.value) { favorite ->
+                FavoriteItem(favorite)
             }
         }
     }
 }
 
 @Composable
-fun HistoryItem(history: TranslationHistoryEntity) {
+fun FavoriteItem(history: FavoriteEntity) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         Text(text = "Source: ${history.sourceText}")
         Text(text = "Translation: ${history.translatedText}")

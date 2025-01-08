@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.hse.speakeasy.app.core.domain.LanguageCode
+import ru.hse.speakeasy.app.core.domain.favorite.SaveFavoriteUseCase
 import ru.hse.speakeasy.app.core.domain.history.SaveHistoryUseCase
 import ru.hse.speakeasy.app.core.domain.translation.TranslationUseCase
 import javax.inject.Inject
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class TranslationViewModel @Inject constructor(
     private val translationUseCase: TranslationUseCase,
     private val saveHistoryUseCase: SaveHistoryUseCase,
+    private val saveFavoriteUseCase: SaveFavoriteUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TranslationUiState())
     val uiState: StateFlow<TranslationUiState> = _uiState
@@ -37,11 +39,19 @@ class TranslationViewModel @Inject constructor(
         }
     }
 
+    fun selectSourceLanguage(language: LanguageCode) {
+        _uiState.update { it.copy(sourceLang = language) }
+    }
+
+    fun selectTargetLanguage(language: LanguageCode) {
+        _uiState.update { it.copy(targetLang = language) }
+    }
+
     fun translateText() {
         viewModelScope.launch {
             val result = translationUseCase.translate(
-                sl = LanguageCode.ENGLISH, // _uiState.value.sourceLang,
-                dl = LanguageCode.RUSSIAN, // _uiState.value.targetLang,
+                sl = _uiState.value.sourceLang,
+                dl = _uiState.value.targetLang,
                 text = _uiState.value.inputText,
             )
 
@@ -55,11 +65,17 @@ class TranslationViewModel @Inject constructor(
         }
     }
 
+    fun addToFavorite() {
+        viewModelScope.launch {
+            saveFavoriteUseCase.save(_uiState.value.inputText, _uiState.value.translatedText.orEmpty())
+        }
+    }
+
 }
 
 data class TranslationUiState(
-    val sourceLang: String = "English",
-    val targetLang: String = "Russia",
+    val sourceLang: LanguageCode = LanguageCode.ENGLISH,
+    val targetLang: LanguageCode = LanguageCode.RUSSIAN,
     val inputText: String = "",
     val translatedText: String? = null,
 )

@@ -1,7 +1,7 @@
 package ru.hse.speakeasy.app.core.domain.history
 
-import ru.hse.speakeasy.app.core.data.TranslationHistory
-import ru.hse.speakeasy.app.core.data.TranslationHistoryDao
+import ru.hse.speakeasy.app.core.data.entity.TranslationHistoryEntity
+import ru.hse.speakeasy.app.core.data.dao.TranslationHistoryDao
 import javax.inject.Inject
 
 class SaveHistoryUseCase @Inject constructor(
@@ -9,7 +9,7 @@ class SaveHistoryUseCase @Inject constructor(
 ) {
     suspend fun save(sourceText: String, translatedText: String) {
         translationHistoryDao.insertHistory(
-            TranslationHistory(
+            TranslationHistoryEntity(
                 sourceText = sourceText,
                 translatedText = translatedText
             )
