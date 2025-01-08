@@ -7,7 +7,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.hse.speakeasy.app.core.data.AppDatabase
-import ru.hse.speakeasy.app.core.data.TranslationHistoryDao
+import ru.hse.speakeasy.app.core.data.dao.FavoritesDao
+import ru.hse.speakeasy.app.core.data.dao.TranslationHistoryDao
 import javax.inject.Singleton
 
 @Module
@@ -24,5 +25,11 @@ object DatabaseModule {
     @Singleton
     fun provideHistoryDao(db: AppDatabase): TranslationHistoryDao {
         return db.translationHistoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteDao(db: AppDatabase): FavoritesDao {
+        return db.favoritesDao()
     }
 }

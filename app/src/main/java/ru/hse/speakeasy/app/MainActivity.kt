@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,13 +19,16 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ru.hse.speakeasy.app.screen.favorite.FavoriteScreen
 import ru.hse.speakeasy.app.screen.history.HistoryScreen
 import ru.hse.speakeasy.app.screen.translation.TranslationScreen
 import ru.hse.speakeasy.app.ui.theme.SpeakEasyTheme
@@ -55,19 +59,19 @@ class MainActivity : ComponentActivity() {
             ) {
 //                composable("chat") {}
 //                composable("camera") {}
-                composable("translate") { TranslationScreen() }
+                composable("translate") { TranslationScreen(scope = lifecycleScope) }
                 composable("history") { HistoryScreen() }
-//                composable("favorite") {}
+                composable("favorite") { FavoriteScreen() }
             }
         }
     }
 
     //private val Destinations = listOf("chat", "camera", "translate", "history", "favorite")
-    private val Destinations = listOf("translate", "history")
+    private val Destinations = listOf("translate", "history", "favorite")
 
     @Composable
     fun BottomNavigationBar(navController: NavController) {
-        var selectedItem by rememberSaveable { mutableIntStateOf(2) }
+        var selectedItem by rememberSaveable { mutableIntStateOf(0) }
 //        val icons = listOf(
 //            ImageVector.vectorResource(R.drawable.ic_chat),
 //            ImageVector.vectorResource(R.drawable.ic_camera),
@@ -78,6 +82,7 @@ class MainActivity : ComponentActivity() {
         val icons = listOf(
             ImageVector.vectorResource(R.drawable.ic_translate),
             ImageVector.vectorResource(R.drawable.ic_history),
+            ImageVector.vectorResource(R.drawable.ic_fav),
         )
 
 
